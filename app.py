@@ -1,4 +1,5 @@
 import os
+import json
 from datetime import datetime
 from functools import wraps
 from pathlib import Path
@@ -19,6 +20,10 @@ from flask import (
 from werkzeug.security import check_password_hash, generate_password_hash
 
 
+# ============================================================
+# FLASK APP
+# ============================================================
+
 app = Flask(__name__)
 
 app.secret_key = os.environ.get(
@@ -31,21 +36,29 @@ app.secret_key = os.environ.get(
 # FIREBASE / FIRESTORE SETUP
 # ============================================================
 
-# IMPORTANT:
-# Change this filename to the exact name of your downloaded
-# Firebase JSON private-key file.
-#
-# Example:
-# college-complaint-box-firebase-adminsdk-xxxxx.json
-
-FIREBASE_KEY_FILE = os.environ.get(
-    "GOOGLE_APPLICATION_CREDENTIALS",
-    "college-complaint-box-1bc7b-firebase-adminsdk-fbsvc-f5fe6ca889.json"
-)
-
+FIREBASE_CREDENTIALS_JSON = os.environ.get("FIREBASE_CREDENTIALS_JSON")
 
 if not firebase_admin._apps:
-    firebase_credential = credentials.Certificate(FIREBASE_KEY_FILE)
+
+    if FIREBASE_CREDENTIALS_JSON:
+        # Render: Firebase credentials are stored
+        # securely in an environment variable.
+        firebase_credential = credentials.Certificate(
+            json.loads(FIREBASE_CREDENTIALS_JSON)
+        )
+
+    else:
+        # Local computer:
+        # Use your Firebase service-account JSON file.
+        FIREBASE_KEY_FILE = os.environ.get(
+            "GOOGLE_APPLICATION_CREDENTIALS",
+            "college-complaint-box-1bc7b-firebase-adminsdk-fbsvc-f5fe6ca889.json"
+        )
+
+        firebase_credential = credentials.Certificate(
+            FIREBASE_KEY_FILE
+        )
+
     firebase_admin.initialize_app(firebase_credential)
 
 
@@ -56,8 +69,15 @@ db = firestore.client()
 # ADMIN SETTINGS
 # ============================================================
 
-ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
-ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin123")
+ADMIN_USERNAME = os.environ.get(
+    "ADMIN_USERNAME",
+    "admin"
+)
+
+ADMIN_PASSWORD = os.environ.get(
+    "ADMIN_PASSWORD",
+    "admin123"
+)
 
 
 # ============================================================
@@ -76,13 +96,16 @@ def get_next_id(collection_name, id_field):
     """
     Generates the next integer ID.
 
-    We keep integer IDs because your existing HTML pages
+    We keep integer IDs because the existing HTML pages
     display complaints as CMP0001, CMP0002, etc.
     """
 
     documents = (
         db.collection(collection_name)
-        .order_by(id_field, direction=firestore.Query.DESCENDING)
+        .order_by(
+            id_field,
+            direction=firestore.Query.DESCENDING
+        )
         .limit(1)
         .stream()
     )
@@ -102,6 +125,7 @@ def get_next_id(collection_name, id_field):
 # ============================================================
 
 def student_required(function):
+
     @wraps(function)
     def wrapper(*args, **kwargs):
 
@@ -115,6 +139,7 @@ def student_required(function):
 
 
 def admin_required(function):
+
     @wraps(function)
     def wrapper(*args, **kwargs):
 
@@ -212,9 +237,11 @@ def register():
         }
 
         # Use student_id as Firestore document ID
-        db.collection(STUDENTS_COLLECTION) \
-            .document(str(student_id)) \
+        (
+            db.collection(STUDENTS_COLLECTION)
+            .document(str(student_id))
             .set(student_data)
+        )
 
         flash("Registration successful. Please login.")
         return redirect(url_for("login"))
@@ -382,9 +409,11 @@ def complaint():
             "created_at": datetime.now().isoformat()
         }
 
-        db.collection(COMPLAINTS_COLLECTION) \
-            .document(str(complaint_id)) \
+        (
+            db.collection(COMPLAINTS_COLLECTION)
+            .document(str(complaint_id))
             .set(complaint_data)
+        )
 
         flash("Complaint submitted successfully.")
 
@@ -708,6 +737,10 @@ def logout():
         url_for("index")
     )
 
+
+# ============================================================
+# RUN APP
+# ============================================================
 
 if __name__ == "__main__":
 
