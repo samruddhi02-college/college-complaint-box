@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="form-card">
+<h2>Submit Complaint</h2>
+<form method="POST">
+<label>Complaint Title</label><input type="text" name="title" placeholder="Example: Computer not working" required>
+<label>Category</label>
+<select name="category" required>
+<option value="">Select Category</option>
+<option>Laboratory</option><option>Classroom</option><option>Computer</option>
+<option>Internet/Wi-Fi</option><option>Library</option><option>Electrical</option>
+<option>Cleanliness</option><option>Equipment</option><option>Other</option>
+</select>
+<label>Location</label><input type="text" name="location" placeholder="Example: Computer Lab 1" required>
+<label>Description</label><textarea name="description" rows="6" required></textarea>
+<button type="submit">Submit Complaint</button>
+</form>
+</div>
+{% endblock %}

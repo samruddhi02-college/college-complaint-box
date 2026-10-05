@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>My Complaints</h1>
+{% if complaints %}
+<div class="table-container"><table>
+<thead><tr><th>ID</th><th>Title</th><th>Category</th><th>Date</th><th>Priority</th><th>Status</th><th>Admin Response</th></tr></thead>
+<tbody>
+{% for complaint in complaints %}
+<tr>
+<td>CMP{{ "%04d"|format(complaint["complaint_id"]) }}</td>
+<td>{{ complaint["title"] }}</td><td>{{ complaint["category"] }}</td><td>{{ complaint["date"] }}</td>
+<td><span class="priority {{ complaint['priority']|lower }}">{{ complaint["priority"] }}</span></td>
+<td>{{ complaint["status"] }}</td>
+<td>{{ complaint["admin_response"] or "Waiting for response" }}</td>
+</tr>
+{% endfor %}
+</tbody></table></div>
+{% else %}
+<div class="empty"><h3>No complaints found.</h3><a class="btn" href="{{ url_for('complaint') }}">Submit Your First Complaint</a></div>
+{% endif %}
+{% endblock %}

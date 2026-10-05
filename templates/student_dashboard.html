@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Welcome, {{ session["student_name"] }} 👋</h1>
+<div class="stats">
+<div class="stat-card"><h3>Total</h3><strong>{{ total }}</strong></div>
+<div class="stat-card"><h3>Pending</h3><strong>{{ pending }}</strong></div>
+<div class="stat-card"><h3>In Progress</h3><strong>{{ progress }}</strong></div>
+<div class="stat-card"><h3>Resolved</h3><strong>{{ resolved }}</strong></div>
+</div>
+<div class="dashboard-buttons">
+<a class="btn" href="{{ url_for('complaint') }}">+ Submit Complaint</a>
+<a class="btn secondary" href="{{ url_for('my_complaints') }}">View My Complaints</a>
+</div>
+{% endblock %}

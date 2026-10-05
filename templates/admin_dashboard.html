@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Admin Dashboard</h1>
+<div class="stats">
+<div class="stat-card"><h3>Total Complaints</h3><strong>{{ total }}</strong></div>
+<div class="stat-card"><h3>Pending</h3><strong>{{ pending }}</strong></div>
+<div class="stat-card"><h3>In Progress</h3><strong>{{ progress }}</strong></div>
+<div class="stat-card"><h3>Resolved</h3><strong>{{ resolved }}</strong></div>
+</div>
+<div class="search-box">
+<form method="GET">
+<input type="text" name="search" placeholder="Search complaints..." value="{{ search }}">
+<select name="status">
+<option value="">All Status</option>
+<option value="Pending" {% if status_filter == "Pending" %}selected{% endif %}>Pending</option>
+<option value="In Progress" {% if status_filter == "In Progress" %}selected{% endif %}>In Progress</option>
+<option value="Resolved" {% if status_filter == "Resolved" %}selected{% endif %}>Resolved</option>
+</select>
+<button type="submit">Search</button>
+</form>
+</div>
+{% if complaints %}
+<div class="table-container"><table>
+<thead><tr><th>ID</th><th>Student</th><th>Complaint</th><th>Category</th><th>Location</th><th>Priority</th><th>Status</th><th>Action</th></tr></thead>
+<tbody>
+{% for complaint in complaints %}
+<tr>
+<td>CMP{{ "%04d"|format(complaint["complaint_id"]) }}</td>
+<td>{{ complaint["name"] }}<br><small>{{ complaint["roll_no"] }}</small></td>
+<td><strong>{{ complaint["title"] }}</strong><br><small>{{ complaint["description"] }}</small></td>
+<td>{{ complaint["category"] }}</td><td>{{ complaint["location"] }}</td>
+<td><span class="priority {{ complaint['priority']|lower }}">{{ complaint["priority"] }}</span></td>
+<td>{{ complaint["status"] }}</td>
+<td>
+<form method="POST" action="{{ url_for('update_complaint', complaint_id=complaint['complaint_id']) }}" class="admin-form">
+<select name="status">
+<option value="Pending" {% if complaint["status"] == "Pending" %}selected{% endif %}>Pending</option>
+<option value="In Progress" {% if complaint["status"] == "In Progress" %}selected{% endif %}>In Progress</option>
+<option value="Resolved" {% if complaint["status"] == "Resolved" %}selected{% endif %}>Resolved</option>
+</select>
+<textarea name="admin_response" rows="3" placeholder="Admin response...">{{ complaint["admin_response"] }}</textarea>
+<button type="submit">Update</button>
+</form>
+<form method="POST" action="{{ url_for('delete_complaint', complaint_id=complaint['complaint_id']) }}">
+<button type="submit" class="delete-btn" onclick="return confirm('Delete this complaint?')">Delete</button>
+</form>
+</td>
+</tr>
+{% endfor %}
+</tbody></table></div>
+{% else %}
+<div class="empty"><h3>No complaints found.</h3></div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="hero">
+<h1>Cloud-Based College Complaint Box</h1>
+<p>Submit, track and manage college complaints online.</p>
+<div class="buttons">
+<a class="btn" href="{{ url_for('register') }}">Student Registration</a>
+<a class="btn secondary" href="{{ url_for('login') }}">Student Login</a>
+</div>
+</div>
+<div class="features">
+<div class="feature-card"><h2>📝 Easy Complaints</h2><p>Students can submit complaints from anywhere.</p></div>
+<div class="feature-card"><h2>☁️ Cloud Database</h2><p>Complaint information can be stored in a cloud-hosted database.</p></div>
+<div class="feature-card"><h2>📊 Track Status</h2><p>Students can track Pending, In Progress and Resolved complaints.</p></div>
+</div>
+{% endblock %}

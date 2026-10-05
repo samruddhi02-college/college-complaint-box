@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cloud Complaint Box</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<nav class="navbar">
+<div class="logo">☁️ Cloud Complaint Box</div>
+<div class="nav-links">
+<a href="{{ url_for('index') }}">Home</a>
+{% if session.get("student_id") %}
+<a href="{{ url_for('student_dashboard') }}">Dashboard</a>
+<a href="{{ url_for('complaint') }}">Submit Complaint</a>
+<a href="{{ url_for('my_complaints') }}">My Complaints</a>
+<a href="{{ url_for('logout') }}">Logout</a>
+{% elif session.get("admin") %}
+<a href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a>
+<a href="{{ url_for('logout') }}">Logout</a>
+{% else %}
+<a href="{{ url_for('login') }}">Student Login</a>
+<a href="{{ url_for('register') }}">Register</a>
+<a href="{{ url_for('admin_login') }}">Admin</a>
+{% endif %}
+</div>
+</nav>
+<div class="container">
+{% with messages = get_flashed_messages() %}
+{% for message in messages %}<div class="alert">{{ message }}</div>{% endfor %}
+{% endwith %}
+{% block content %}{% endblock %}
+</div>
+<footer><p>Cloud-Based College Complaint Management System</p></footer>
+</body>
+</html>
